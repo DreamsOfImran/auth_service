@@ -12,10 +12,7 @@ jobs:
       - image: golang:1.13.4-stretch
     steps:
       - checkout
-      - run:
-          name: Publish the package
-          command:
-            run: curl -sL https://git.io/goreleaser | bash
+      - run: curl -sL https://git.io/goreleaser | bash
 
 workflows:
   version: 2
