@@ -1,43 +1,19 @@
-version: 2
-jobs:
-  build:
-    docker:
-      - image: golang:1.13.4-stretch
-    parallelism: 2
-    steps:
-      - checkout
-      - run:
-          name: Build the app
-          command:
-            sh bin/build
-      - store_artifacts:
-          path: app
-          destination: package/app
-  publish_package:
-    docker:
-      - image: golang:1.13.4-stretch
-    steps:
-      - checkout
-      - run:
-          name: Publish the package
-          command:
-            run: curl -sL https://git.io/goreleaser | bash
-
-
+# .circleci/config.yml
+version: 2.1
 workflows:
-  version: 2
-  github_status_pipeline:
+  main:
     jobs:
-      - hold_for_approval:
-          type: approval
-          requires:
-            - build
+      - release:
+          # Only run this job on git tag pushes
           filters:
             branches:
-              only: master
-      - publish_package:
-          requires:
-            - hold_for_approval
-          filters:
-            branches:
-              only: master
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
+jobs:
+  release:
+    docker:
+      - image: circleci/golang:1.13
+    steps:
+      - checkout
+      - run: curl -sL https://git.io/goreleaser | bash
