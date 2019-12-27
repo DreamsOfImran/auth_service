@@ -16,3 +16,10 @@ jobs:
           name: Publish the package
           command:
             run: curl -sL https://git.io/goreleaser | bash
+
+workflow:
+  version: 2
+  github_status_pipeline:
+    jobs:
+      - build
+      - publish_package
