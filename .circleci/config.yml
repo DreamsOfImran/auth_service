@@ -1,18 +1,72 @@
-version: 2.1
-workflows:
-  main:
-    jobs:
-      - release:
-          # Only run this job on git tag pushes
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /v[0-9]+(\.[0-9]+)*(-.*)*/
+version: 2
 jobs:
-  release:
+  unit_test:
     docker:
-      - image: circleci/golang:1.13
+      - image: golang:1.13.4
+    parallelism: 2
     steps:
       - checkout
-      - run: curl -sL https://git.io/goreleaser | bash
+      - run:
+          name: Run unit tests
+          command:
+            sh bin/test
+  lint:
+    docker:
+      - image: golang:1.13.4-stretch
+    parallelism: 2
+    steps:
+      - checkout
+      - run:
+          name: Run static analysis
+          command:
+            sh bin/lint
+  build:
+    docker:
+      - image: golang:1.13.4-stretch
+    parallelism: 2
+    steps:
+      - checkout
+      - run:
+          name: Build the app
+          command:
+            sh bin/build
+      - store_artifacts:
+          path: app
+          destination: package/app
+  publish_package:
+    docker:
+      - image: golang:1.13.4-stretch
+    steps:
+      - checkout
+      - run:
+          name: Publish the package
+          command:
+            run: curl -sL https://git.io/goreleaser | bash
+
+
+workflows:
+  version: 2
+  github_status_pipeline:
+    jobs:
+      - unit_test
+      - lint
+      - build:
+          requires:
+            - unit_test
+            - lint
+          filters:
+            branches:
+              only: master
+      - hold_for_approval:
+          type: approval
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+      - publish_package:
+          requires:
+            - hold_for_approval
+          filters:
+            branches:
+              only: master

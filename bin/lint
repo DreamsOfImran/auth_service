@@ -1,0 +1,4 @@
+#!/bin/bash
+
+wget -O - -q https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s v1.21.0
+./bin/golangci-lint run

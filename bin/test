@@ -1,0 +1,3 @@
+#!/bin/bash
+
+go test spec/sum_test.go
