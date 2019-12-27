@@ -28,15 +28,6 @@ workflows:
   version: 2
   github_status_pipeline:
     jobs:
-      - unit_test
-      - lint
-      - build:
-          requires:
-            - unit_test
-            - lint
-          filters:
-            branches:
-              only: master
       - hold_for_approval:
           type: approval
           requires:
