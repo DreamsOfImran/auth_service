@@ -17,9 +17,9 @@ jobs:
           command:
             run: curl -sL https://git.io/goreleaser | bash
 
-workflow:
+workflows:
   version: 2
-  github_status_pipeline:
+  workflow:
     jobs:
-      - build
-      - publish_package
+    - build
+    - publish_package
