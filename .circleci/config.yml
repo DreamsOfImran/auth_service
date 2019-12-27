@@ -1,25 +1,5 @@
 version: 2
 jobs:
-  unit_test:
-    docker:
-      - image: golang:1.13.4
-    parallelism: 2
-    steps:
-      - checkout
-      - run:
-          name: Run unit tests
-          command:
-            sh bin/test
-  lint:
-    docker:
-      - image: golang:1.13.4-stretch
-    parallelism: 2
-    steps:
-      - checkout
-      - run:
-          name: Run static analysis
-          command:
-            sh bin/lint
   build:
     docker:
       - image: golang:1.13.4-stretch
